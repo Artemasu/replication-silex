@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+boto3
+sqlalchemy
+python-multipart
+psycopg2-binary
+pytesseract
+pillow

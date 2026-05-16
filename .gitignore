@@ -1,0 +1,20 @@
+.venv
+.png
+.pdf
+.json
+
+# Environnement virtuel
+.venv/
+__pycache__/
+*.pyc
+
+# Clés et Secrets
+backend/client_secrets.json
+backend/token.json
+
+# Stockages simulés et locaux
+backend/cloud_aws_simulated/
+backend/cloud_scaleway_simulated/
+backend/src/cloud_aws_simulated/
+backend/src/cloud_scaleway_simulated/
+backend/src/Local_storage/
