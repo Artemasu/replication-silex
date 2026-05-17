@@ -1,0 +1,39 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --purple: #7F77DD;
+  --purple-dark: #534AB7;
+  --purple-light: #EEEDFE;
+  --green: #1D9E75;
+  --green-light: #E1F5EE;
+  --orange: #EF9F27;
+  --orange-light: #FAEEDA;
+  --red: #E24B4A;
+  --red-light: #FCEBEB;
+  --gray-50: #F8F8F8;
+  --gray-100: #F0F0F0;
+  --gray-200: #E0E0E0;
+  --gray-400: #9E9E9E;
+  --gray-600: #5F5F5F;
+  --gray-900: #1A1A1A;
+  --white: #ffffff;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--gray-50);
+  color: var(--gray-900);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}

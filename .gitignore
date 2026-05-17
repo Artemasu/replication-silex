@@ -2,6 +2,8 @@
 .png
 .pdf
 .json
+.env
+venv
 
 # Environnement virtuel
 .venv/
@@ -18,3 +20,10 @@ backend/cloud_scaleway_simulated/
 backend/src/cloud_aws_simulated/
 backend/src/cloud_scaleway_simulated/
 backend/src/Local_storage/
+
+# Node
+node_modules/
+dist/
+
+# Secrets
+client_secrets.json

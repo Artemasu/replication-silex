@@ -10,6 +10,14 @@ from .providers.gdrive import GoogleDriveProvider
 from .database.session import engine, SessionLocal, get_db
 from .database.models import Base, DocumentMetadata
 from .core.ai_service import AIService
+from dotenv import load_dotenv
+import os
+import boto3
+from botocore.exceptions import NoCredentialsError
+from .providers.s3 import S3StorageProvider
+
+# Chargement des variables d'environnement
+load_dotenv()
 
 # Gestion des chemins et configurations
 # On définit la racine du projet backend/ par rapport à ce fichier
@@ -27,6 +35,12 @@ storage_destinations = [
     LocalStorageProvider(storage_dir="cloud_aws_simulated"),
     LocalStorageProvider(storage_dir="cloud_scaleway_simulated"),
     LocalStorageProvider(storage_dir="Local_storage"),
+    S3StorageProvider(
+        bucket_name=os.getenv("S3_BUCKET_NAME"),
+        region=os.getenv("AWS_REGION"),
+        aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+    ),
     GoogleDriveProvider(
         credentials_path=str(CREDENTIALS_PATH),
         folder_id="1kF2R4pW72NYYVqaoCCqwlUUOUcqAYESc"
@@ -66,9 +80,9 @@ async def upload_document(file: UploadFile = File(...), db: Session = Depends(ge
             filename=file.filename,
             aws_s3_path=f"cloud_aws_simulated/{file.filename}",
             scaleway_path=f"cloud_scaleway_simulated/{file.filename}",
-            Local_path=f"Local_storage/{file.filename}",
+            local_path=f"Local_storage/{file.filename}", 
             google_drive_path=f"Google Drive/{file.filename}",
-            content_summary=extracted_text  # Texte extrait pour la recherche efficace
+            content_summary=extracted_text
         )
 
         db.add(new_doc)

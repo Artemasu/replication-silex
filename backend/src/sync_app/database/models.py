@@ -14,6 +14,7 @@ class DocumentMetadata(Base):
     # On stocke ici l'état de réplication pour chaque service 
     aws_s3_path = Column(String, nullable=True)
     scaleway_path = Column(String, nullable=True)
+    local_path = Column(String, nullable=True) 
     google_drive_path = Column(String, nullable=True)
     
     # Pour l'Agent IA plus tard, on peut stocker un résumé du contenu extrait pour faciliter les recherches
