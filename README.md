@@ -1,71 +1,152 @@
-# Silex — Plateforme de Réplication Documentaire
+# Silex — Plateforme de réplication documentaire
 
-Silex est une application permettant d'uploader un document et de le répliquer automatiquement vers plusieurs destinations de stockage (AWS simulé, Scaleway simulé, stockage local, Google Drive), tout en extrayant son contenu textuel via un agent IA.
+Silex permet d'uploader un document et de le répliquer automatiquement vers plusieurs destinations de stockage (Amazon S3, Google Drive, Scaleway simulé, stockage local), tout en extrayant son contenu textuel via un agent IA.
 
 ---
 
 ## Prérequis
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installé et lancé
-- Python 3.10+
-- Un fichier `client_secrets.json` présent dans le dossier `backend/`
+Installer ces outils une seule fois :
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Python 3.13+](https://www.python.org/downloads/)
+- [Node.js LTS](https://nodejs.org)
 
 ---
 
-## Lancer l'application
+## Installation
 
-### 1. Démarrer Docker Desktop
-
-Lance Docker Desktop et assure-toi qu'il est bien en cours d'exécution.
-
-### 2. Se placer dans le bon dossier
+### 1. Cloner le projet
 
 ```bash
+git clone <url-du-repo>
+cd Silex
+```
+
+### 2. Créer le fichier `.env`
+
+Créer un fichier `.env` à la racine du projet avec les clés AWS (à demander) :
+
+```env
+AWS_ACCESS_KEY_ID=xxxx
+AWS_SECRET_ACCESS_KEY=xxxx
+AWS_REGION=eu-west-3
+S3_BUCKET_NAME=silex-documents
+```
+
+### 3. Ajouter `client_secrets.json`
+
+Placer le fichier `client_secrets.json` dans le dossier `backend/`.  
+Ce fichier contient les credentials Google Drive (à demander, il n'est pas sur Git)
+
+---
+
+## Lancer le projet
+
+> À chaque session de travail, il faut lancer **3 choses** : Docker, le backend et le frontend.
+
+### Terminal 1 — Base de données
+
+```bash
+docker compose up -d
+```
+
+### Terminal 2 — Backend
+
+**Première fois uniquement :**
+```bash
+# Depuis la racine du projet
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+# Mac/Linux
+source .venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+**À chaque session :**
+```bash
+# Depuis la racine du projet
+.venv\Scripts\activate
+
 cd backend/src
-```
-
-### 3. Créer et activer un environnement virtuel
-
-```bash
-python -m venv venv
-venv\Scripts\activate
-```
-
-### 4. Installer les dépendances
-
-```bash
-pip install fastapi uvicorn sqlalchemy pydantic python-multipart google-api-python-client psycopg2
-```
-
-### 5. Lancer le serveur
-
-```bash
 uvicorn sync_app.main:app --reload
 ```
 
-### 6. Accéder à la documentation interactive
+### Terminal 3 — Frontend
 
-Ouvre dans ton navigateur :
-
+**Première fois uniquement :**
+```bash
+cd frontend
+npm install
 ```
-http://127.0.0.1:8000/docs
+
+**À chaque session :**
+```bash
+cd frontend
+npm run dev
 ```
 
 ---
 
-## Vérifier la réplication
+## Accès
 
-Après un upload, tu peux vérifier que le fichier a bien été répliqué :
-
-- **En local** : dossiers `cloud_aws_simulated/`, `cloud_scaleway_simulated/`, `Local_storage/` dans `backend/src/`
-- **Sur Google Drive** : [Dossier Drive du projet](https://drive.google.com/drive/folders/1kF2R4pW72NYYVqaoCCqwlUUOUcqAYESc?usp=drive_link)
+| Interface | URL |
+|-----------|-----|
+| Site | http://localhost:5173 |
+| API (Swagger) | http://127.0.0.1:8000/docs |
+| Google doc | https://drive.google.com/drive/folders/1kF2R4pW72NYYVqaoCCqwlUUOUcqAYESc |
+| AWS S3 | Via les données transmises |
 
 ---
 
-## Endpoints principaux
+## Endpoints API
 
-| Méthode | Route        | Description                          |
-|---------|--------------|--------------------------------------|
-| GET     | `/health`    | Vérifie que l'API est en ligne       |
-| POST    | `/upload`    | Upload et réplique un document       |
-| GET     | `/documents` | Liste tous les documents enregistrés |
+| Méthode | Route | Description |
+|---------|-------|-------------|
+| GET | `/health` | Vérifie que l'API est en ligne |
+| POST | `/upload` | Upload et réplique un document |
+| GET | `/documents` | Liste tous les documents enregistrés |
+
+---
+
+## Providers de stockage
+
+| Provider | Type | Statut |
+|----------|------|--------|
+| Amazon S3 | Cloud réel | `eu-west-3` · bucket `silex-documents` |
+| Google Drive | Cloud réel | Dossier Silex via OAuth2 |
+| Scaleway | Simulé en local | `cloud_scaleway_simulated/` |
+| Stockage local | Filesystem | `Local_storage/` |
+
+---
+
+## Structure du projet
+
+```
+Silex/
+├── backend/
+│   ├── src/
+│   │   └── sync_app/
+│   │       ├── main.py           # Point d'entrée FastAPI
+│   │       ├── providers/        # S3, GDrive, Local, Scaleway
+│   │       ├── database/         # Modèles et session SQLAlchemy
+│   │       └── core/             # Service IA (extraction texte)
+│   └── client_secrets.json       # Ne pas commiter !
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx               # Page principale
+│   │   ├── components/
+│   │   │   ├── Providers.jsx     # Statut des providers
+│   │   │   ├── UploadZone.jsx    # Zone d'upload
+│   │   │   └── DocumentList.jsx  # Liste des documents
+│   │   └── index.css
+│   └── vite.config.js
+├── .venv/                        # Ne pas commiter !
+├── docker-compose.yml            # Base de données PostgreSQL
+├── requirements.txt              # Dépendances Python
+├── .env                          # Ne pas commiter !
+└── README.md
+```
