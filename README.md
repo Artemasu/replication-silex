@@ -129,24 +129,42 @@ npm run dev
 Silex/
 ├── backend/
 │   ├── src/
+│   │   ├── Local_storage/
 │   │   └── sync_app/
-│   │       ├── main.py           # Point d'entrée FastAPI
-│   │       ├── providers/        # S3, GDrive, Local, Scaleway
-│   │       ├── database/         # Modèles et session SQLAlchemy
-│   │       └── core/             # Service IA (extraction texte)
-│   └── client_secrets.json       # Ne pas commiter !
+│   │       ├── core/
+│   │       │   ├── ai_service.py       # Service IA (extraction texte)
+│   │       │   └── chat_service.py     # Service de chat
+│   │       ├── database/
+│   │       │   ├── models.py           # Modèles SQLAlchemy
+│   │       │   └── session.py          # Session base de données
+│   │       ├── providers/
+│   │       │   ├── base.py             # Classe de base provider
+│   │       │   ├── gdrive.py           # Provider Google Drive
+│   │       │   ├── local.py            # Provider Local
+│   │       │   ├── r2.py               # Provider Cloudflare R2
+│   │       │   └── s3.py               # Provider S3
+│   │       └── main.py                 # Point d'entrée FastAPI
+│   ├── client_secrets.json             # Ne pas commiter !
+│   └── token.json                      # Ne pas commiter !
 ├── frontend/
 │   ├── src/
-│   │   ├── App.jsx               # Page principale
 │   │   ├── components/
-│   │   │   ├── Providers.jsx     # Statut des providers
-│   │   │   ├── UploadZone.jsx    # Zone d'upload
-│   │   │   └── DocumentList.jsx  # Liste des documents
-│   │   └── index.css
+│   │   │   ├── ChatBot.jsx             # Interface chatbot
+│   │   │   ├── DocumentList.jsx        # Liste des documents
+│   │   │   ├── Providers.jsx           # Statut des providers
+│   │   │   └── UploadZone.jsx          # Zone d'upload
+│   │   ├── App.jsx                     # Page principale
+│   │   ├── index.css
+│   │   ├── main.jsx
+│   │   └── site.py
+│   ├── index.html
+│   ├── package.json
+│   ├── package-lock.json
 │   └── vite.config.js
-├── .venv/                        # Ne pas commiter !
-├── docker-compose.yml            # Base de données PostgreSQL
-├── requirements.txt              # Dépendances Python
-├── .env                          # Ne pas commiter !
+├── Local_storage/
+├── .env                                # Ne pas commiter !
+├── .gitignore
+├── docker-compose.yml                  # Base de données PostgreSQL
+├── requirements.txt                    # Dépendances Python
 └── README.md
 ```
