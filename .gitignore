@@ -27,3 +27,19 @@ dist/
 
 # Secrets
 client_secrets.json
+
+Local_storage/
+cloud_aws_simulated/
+cloud_scaleway_simulated/
+*.pdf
+*.docx
+*.pptx
+*.csv
+*.json
+*.ipynb
+*.txt
+*.php
+*.py
+*.jpg
+*.jpeg
+*.png
