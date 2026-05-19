@@ -3,8 +3,6 @@ from pathlib import Path
 from typing import List
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from sqlalchemy.orm import Session
-
-# Imports du projet
 from .providers.local import LocalStorageProvider
 from .providers.gdrive import GoogleDriveProvider
 from .database.session import engine, SessionLocal, get_db
@@ -16,9 +14,11 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 from .providers.s3 import S3StorageProvider
 from .providers.r2 import R2StorageProvider
+from .core.chat_service import ChatService
 
 # Chargement des variables d'environnement
 load_dotenv()
+chat_service = ChatService()
 
 # Gestion des chemins et configurations
 # On définit la racine du projet backend/ par rapport à ce fichier
@@ -33,8 +33,6 @@ app = FastAPI(title="Plateforme de Réplication Documentaire")
 
 # Configuration des destinations de stockage
 storage_destinations = [
-    LocalStorageProvider(storage_dir="cloud_aws_simulated"),
-    LocalStorageProvider(storage_dir="cloud_scaleway_simulated"),
     LocalStorageProvider(storage_dir="Local_storage"),
     S3StorageProvider(
         bucket_name=os.getenv("S3_BUCKET_NAME"),
@@ -72,7 +70,6 @@ async def upload_document(file: UploadFile = File(...), db: Session = Depends(ge
             raise HTTPException(status_code=400, detail="Le fichier est vide")
 
         # Agent IA : Extraction du texte PDF
-        # On passe file_bytes et file.filename
         extracted_text = AIService.extract_text(file_bytes, file.filename)
 
         # Moteur de Réplication : Logique de "Fan-out" (duplication vers tous les services)
@@ -143,6 +140,12 @@ async def delete_all_documents(db: Session = Depends(get_db)):
     db.query(DocumentMetadata).delete()
     db.commit()
     return {"message": "Tous les documents supprimés"}
+
+@app.post("/chat")
+async def chat(question: str, db: Session = Depends(get_db)):
+    docs = db.query(DocumentMetadata).all()
+    answer = chat_service.ask(question, docs)
+    return {"answer": answer}
 
 if __name__ == "__main__":
     import uvicorn

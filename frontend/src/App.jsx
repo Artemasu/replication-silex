@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Providers from './components/Providers.jsx'
 import UploadZone from './components/UploadZone.jsx'
 import DocumentList from './components/DocumentList.jsx'
+import ChatBot from './components/ChatBot.jsx'
 
 const API = '/api'
 
@@ -32,7 +33,7 @@ export default function App() {
       {/* Header */}
       <header style={styles.header}>
         <div style={styles.logo}>
-          <div style={styles.logoIcon}>📋</div>
+          <div style={styles.logoIcon}>🗿</div>
           <div>
             <div style={styles.logoName}>Silex</div>
             <div style={styles.logoSub}>Plateforme de réplication documentaire</div>
@@ -63,6 +64,13 @@ export default function App() {
       {/* Upload */}
       <Section title="Uploader un document">
         <UploadZone apiUrl={API} onUploadDone={fetchDocuments} />
+      </Section>
+
+      <Section title="Ody 🌊">
+        <p style={{ marginTop: -8, marginBottom: 12, fontSize: 13, color: '#9E9E9E' }}>
+          L'assistant intelligent de Silex
+        </p>
+        <ChatBot />
       </Section>
 
       {/* Liste des documents */}
