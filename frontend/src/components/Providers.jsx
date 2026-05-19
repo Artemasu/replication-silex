@@ -16,11 +16,11 @@ const PROVIDERS = [
     status: 'online',
   },
   {
-    name: 'Scaleway (simulé)',
-    detail: 'cloud_scaleway_simulated/',
-    icon: '🗄️',
-    color: '#5DCAA5',
-    status: 'simulated',
+    name: 'Cloudflare R2',
+    detail: 'silex-r2 · auto',
+    icon: '🟠',
+    color: '#F6821F',
+    status: 'online',
   },
   {
     name: 'Stockage local',

@@ -67,7 +67,7 @@ export default function App() {
 
       {/* Liste des documents */}
       <Section title={`Documents enregistrés (${documents.length})`} onRefresh={fetchDocuments}>
-        <DocumentList documents={documents} loading={loading} />
+        <DocumentList documents={documents} loading={loading} onRefresh={fetchDocuments} />
       </Section>
     </div>
   )

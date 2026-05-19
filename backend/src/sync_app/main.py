@@ -15,6 +15,7 @@ import os
 import boto3
 from botocore.exceptions import NoCredentialsError
 from .providers.s3 import S3StorageProvider
+from .providers.r2 import R2StorageProvider
 
 # Chargement des variables d'environnement
 load_dotenv()
@@ -44,6 +45,12 @@ storage_destinations = [
     GoogleDriveProvider(
         credentials_path=str(CREDENTIALS_PATH),
         folder_id="1kF2R4pW72NYYVqaoCCqwlUUOUcqAYESc"
+    ),
+    R2StorageProvider(
+        bucket_name=os.getenv("R2_BUCKET_NAME"),
+        access_key_id=os.getenv("R2_ACCESS_KEY_ID"),
+        secret_access_key=os.getenv("R2_SECRET_ACCESS_KEY"),
+        endpoint_url=os.getenv("R2_ENDPOINT_URL"),
     )
 ]
 
@@ -79,8 +86,8 @@ async def upload_document(file: UploadFile = File(...), db: Session = Depends(ge
         new_doc = DocumentMetadata(
             filename=file.filename,
             aws_s3_path=f"cloud_aws_simulated/{file.filename}",
-            scaleway_path=f"cloud_scaleway_simulated/{file.filename}",
-            local_path=f"Local_storage/{file.filename}", 
+            r2_path=f"silex-r2/{file.filename}",          # ← Remplace scaleway_path
+            local_path=f"Local_storage/{file.filename}",
             google_drive_path=f"Google Drive/{file.filename}",
             content_summary=extracted_text
         )
@@ -113,6 +120,29 @@ def list_documents(db: Session = Depends(get_db)):
             "has_content": bool(d.content_summary)
         } for d in docs
     ]
+
+@app.delete("/documents/{document_id}")
+async def delete_document(document_id: int, db: Session = Depends(get_db)):
+    doc = db.query(DocumentMetadata).filter(DocumentMetadata.id == document_id).first()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document introuvable")
+    
+    for provider in storage_destinations:
+        provider.delete(doc.filename)
+    
+    db.delete(doc)
+    db.commit()
+    return {"message": f"{doc.filename} supprimé"}
+
+@app.delete("/documents")
+async def delete_all_documents(db: Session = Depends(get_db)):
+    docs = db.query(DocumentMetadata).all()
+    for doc in docs:
+        for provider in storage_destinations:
+            provider.delete(doc.filename)
+    db.query(DocumentMetadata).delete()
+    db.commit()
+    return {"message": "Tous les documents supprimés"}
 
 if __name__ == "__main__":
     import uvicorn

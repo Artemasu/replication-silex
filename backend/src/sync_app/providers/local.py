@@ -1,5 +1,6 @@
 import os
 import shutil
+from pathlib import Path
 from .base import StorageProvider
 from typing import BinaryIO
 
@@ -26,3 +27,10 @@ class LocalStorageProvider(StorageProvider):
 
     def get_status(self) -> bool:
         return os.path.exists(self.storage_dir)
+    
+    def delete(self, filename: str) -> bool:
+        path = Path(self.storage_dir) / filename
+        if path.exists():
+            path.unlink()
+            return True
+        return False

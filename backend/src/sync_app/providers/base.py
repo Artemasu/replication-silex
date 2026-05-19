@@ -4,7 +4,7 @@ from typing import BinaryIO
 class StorageProvider(ABC):
 
 # Interface de base pour tous les services de stockage. 
-# Chaque nouveau provider (S3, Scaleway et local) doit hériter de cette classe.
+# Chaque nouveau provider (S3, r2 et local) doit hériter de cette classe.
 
     @abstractmethod
     def upload(self, file_object: BinaryIO, filename: str) -> bool:
@@ -27,6 +27,6 @@ class StorageProvider(ABC):
     @abstractmethod
     def provider_name(self) -> str:
         """
-        Retourne le nom du provider ('AWS_S3', 'Scaleway' ou 'Local').
+        Retourne le nom du provider ('AWS_S3', 'r2' ou 'Local').
         """
         pass

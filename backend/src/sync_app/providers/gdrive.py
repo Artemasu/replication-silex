@@ -15,7 +15,7 @@ class GoogleDriveProvider(StorageProvider):
         self._provider_name = "Google_Drive"
         self.scopes = ['https://www.googleapis.com/auth/drive']
         
-        # Chemins pour OAuth
+        # Chemins pour OAuth    
         self.client_secrets_path = credentials_path
         # On stocke le token.json dans le même dossier que les secrets
         self.token_path = os.path.join(os.path.dirname(credentials_path), 'token.json')
@@ -68,7 +68,6 @@ class GoogleDriveProvider(StorageProvider):
                 'parents': [self.folder_id]
             }
 
-            # Utilisation de MediaIoBaseUpload pour les objets de type flux (BytesIO, file open, etc.)
             media = MediaIoBaseUpload(
                 file_obj, 
                 mimetype='application/octet-stream', 
@@ -93,3 +92,29 @@ class GoogleDriveProvider(StorageProvider):
 
     def get_status(self):
         return {"status": "active", "provider": self.provider_name}
+    
+    def delete(self, filename: str) -> bool:
+        try:
+            # Cherche le fichier par nom dans le dossier cible
+            results = self.service.files().list(
+                q=f"name='{filename}' and '{self.folder_id}' in parents and trashed=false",
+                fields="files(id, name)",
+                supportsAllDrives=True
+            ).execute()
+
+            files = results.get("files", [])
+            if not files:
+                print(f"[GDrive] ⚠️ Fichier introuvable : {filename}")
+                return False
+
+            for f in files:
+                self.service.files().delete(
+                    fileId=f["id"],
+                    supportsAllDrives=True
+                ).execute()
+                print(f"[GDrive] ✅ Fichier supprimé : {f['id']}")
+            return True
+
+        except Exception as e:
+            print(f"[GDrive] ❌ Erreur suppression : {e}")
+            return False
