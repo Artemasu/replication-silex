@@ -43,3 +43,8 @@ cloud_scaleway_simulated/
 *.jpg
 *.jpeg
 *.png
+
+# Rendus du projet
+!Poster_SILEX_ESME_Inge2D.pdf
+!Rapport_SILEX_ESME_Inge2D.docx
+!Presentation_SILEX_ESME_Inge2D.pdf
