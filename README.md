@@ -1,6 +1,6 @@
-# Silex — Plateforme de réplication documentaire
+# Silex : Plateforme de réplication documentaire
 
-Silex permet d'uploader un document et de le répliquer automatiquement vers plusieurs destinations de stockage (Amazon S3, Google Drive, Scaleway simulé, stockage local), tout en extrayant son contenu textuel via un agent IA.
+Silex permet d'uploader un document et de le répliquer automatiquement vers plusieurs destinations de stockage (Amazon S3, Google Drive, Cloudflare R2, stockage local), tout en extrayant son contenu textuel via un agent IA. Notre ChatBot Ody nous permet d'intéragir avec tous les fichiers pour effectuer des requêtes via les données présentes uniquement.
 
 ---
 
@@ -32,6 +32,13 @@ AWS_ACCESS_KEY_ID=xxxx
 AWS_SECRET_ACCESS_KEY=xxxx
 AWS_REGION=eu-west-3
 S3_BUCKET_NAME=silex-documents
+
+R2_BUCKET_NAME=silex-r2
+R2_ACCESS_KEY_ID=678kjd897...
+R2_SECRET_ACCESS_KEY=593088...
+R2_ENDPOINT_URL=https://...djycgdq.com
+
+ANTHROPIC_API_KEY=sk-...
 ```
 
 ### 3. Ajouter `client_secrets.json`
@@ -99,6 +106,7 @@ npm run dev
 | API (Swagger) | http://127.0.0.1:8000/docs |
 | Google doc | https://drive.google.com/drive/folders/1kF2R4pW72NYYVqaoCCqwlUUOUcqAYESc |
 | AWS S3 | Via les données transmises |
+| Cloudflare R2 | Via les données transmises |
 
 ---
 
@@ -118,7 +126,7 @@ npm run dev
 |----------|------|--------|
 | Amazon S3 | Cloud réel | `eu-west-3` · bucket `silex-documents` |
 | Google Drive | Cloud réel | Dossier Silex via OAuth2 |
-| Scaleway | Simulé en local | `cloud_scaleway_simulated/` |
+| Cloudflare R2 | Cloud réel | `silex-r2` |
 | Stockage local | Filesystem | `Local_storage/` |
 
 ---
